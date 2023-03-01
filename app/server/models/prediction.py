@@ -1,6 +1,12 @@
 from typing import Optional
-
+from app.server.database import Base
+from sqlalchemy import Column, Integer, String
 from pydantic import BaseModel, Field
+
+class PredictionOrm(Base):
+    __tablename__ = 'predictions'
+    id = Column(Integer, primary_key=True, nullable=False)
+    text = Column(String(500), unique=True)
 
 class PredictionSchema(BaseModel):
   text: str = Field(...)
@@ -11,16 +17,7 @@ class PredictionSchema(BaseModel):
         "text": "Hello there",
       }
     }
-
-class UpdatePredictionModel(BaseModel):
-  text: Optional[str]
-
-  class Config:
-    schema_extra = {
-      "example": {
-        "text": "Hello there",
-      }
-    }
+    orm_mode = True
 
 def ResponseModel(data, message):
   return {

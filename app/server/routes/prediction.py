@@ -1,5 +1,7 @@
-from fastapi import APIRouter, Body
+from fastapi import APIRouter, Body, Depends, HTTPException, Response, status
 from fastapi.encoders import jsonable_encoder
+from sqlalchemy.orm import Session
+from app.server.database import get_db
 
 from app.server.database import (
     add_prediction,
@@ -12,13 +14,15 @@ from app.server.models.prediction import (
     ErrorResponseModel,
     ResponseModel,
     PredictionSchema,
-    UpdatePredictionModel,
+    PredictionOrm
 )
 
 router = APIRouter()
 
-@router.post("/", response_description="Prediction data added into the database")
-async def add_prediciton_data(prediciton: PredictionSchema = Body(...)):
-    prediciton = jsonable_encoder(prediciton)
-    new_prediction = await add_prediction(prediciton)
+@router.post("/", response_description="Prediction data added into the database", status_code=status.HTTP_201_CREATED)
+async def add_prediciton_data(predicton: PredictionSchema = Body(...), db: Session = Depends(get_db)):
+    new_prediction = PredictionOrm(**predicton.dict())
+    db.add(new_prediction)
+    db.commit()
+    db.refresh(new_prediction)
     return ResponseModel(new_prediction, "Prediciton added successfully.")
