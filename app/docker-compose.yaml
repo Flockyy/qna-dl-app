@@ -12,7 +12,7 @@ services:
       - ./:/app
     env_file:
       - .env
-    command: python app/main.py
+    command: python main.py
 
   postgres_db:
     image: postgres
