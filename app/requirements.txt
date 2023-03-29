@@ -2,3 +2,5 @@ fastapi==0.92.0
 sqlalchemy==2.0.4
 pydantic[dotenv]
 psycopg2
+torch
+tranformers
